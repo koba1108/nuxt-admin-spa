@@ -8,7 +8,8 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "deploy": "nuxt generate && firebase deploy --only hosting --project=project-nymbus"
   },
   "dependencies": {
     "cross-env": "^5.2.0",
