@@ -33,7 +33,8 @@ export default {
   */
   plugins: [
     '~/plugins/firebase.js',
-    '~/plugins/mixins.js',
+    '~/plugins/components.js',
+    '~/plugins/vue2-google-maps.js',
   ],
 
   /*
