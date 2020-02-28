@@ -15,7 +15,6 @@
   export default {
     data() {
       return {
-        uid: '',
         form: {
           displayName: '',
           email: '',
@@ -24,6 +23,9 @@
       }
     },
     computed: {
+      uid () {
+        return this.$route.params.id
+      },
       updateData() {
         const data = {
           uid: this.uid,
@@ -66,7 +68,6 @@
       },
     },
     created() {
-      this.uid = this.$route.params.id
       this.fetchAuthUser()
     },
   }

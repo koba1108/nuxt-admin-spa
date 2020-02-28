@@ -32,8 +32,6 @@
 </template>
 
 <script>
-  import { vehicleListPath } from '~/secret/vehicleApiConfig'
-
   export default {
     data() {
       return {
@@ -62,7 +60,7 @@
     methods: {
       async setVehicleList() {
         try {
-          const { data } = await this.$api.post(vehicleListPath)
+          const { data } = await this.$vehicleList.get()
           this.vehicleList = data.Data
         } catch (e) {
           alert(e.message)
@@ -81,9 +79,7 @@
       this.setVehicleList()
       this.$db.collection('battery').
         onSnapshot(snapshot => {
-          this.batteryList = snapshot.docs.map(doc => {
-            return doc.data()
-          })
+          this.batteryList = snapshot.docs.map(doc =>  doc.data())
         })
     },
   }

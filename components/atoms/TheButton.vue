@@ -2,6 +2,7 @@
   <button
     class="button"
     :data-type="type"
+    :disabled="disabled"
     @click="$emit('click')"
   >
     <slot/>
@@ -11,6 +12,10 @@
 <script>
   export default {
     props: {
+      disabled: {
+        type: Boolean,
+        default: false,
+      },
       type: {
         type: String,
         default: 'default',

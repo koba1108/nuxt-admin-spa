@@ -9,7 +9,7 @@ export default async ({ app, env, store }, inject) => {
   if(!firebase.apps.length) {
     firebase.initializeApp(nymbus)
   }
-  const functions = firebase.functions()
+  const functions = firebase.app().functions('asia-east2')
   if(location.hostname === 'localhost') {
     functions.useFunctionsEmulator('http://localhost:5001')
   }
@@ -23,5 +23,8 @@ export default async ({ app, env, store }, inject) => {
     add: functions.httpsCallable('addAuth'),
     update: functions.httpsCallable('editAuth'),
     delete: functions.httpsCallable('deleteAuth'),
+  })
+  inject('vehicleList', {
+    get: functions.httpsCallable('getVehicleList'),
   })
 }
