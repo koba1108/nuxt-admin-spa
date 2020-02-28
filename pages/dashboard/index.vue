@@ -2,36 +2,45 @@
   <div>
     <header>監視画面だよ</header>
     <main>
-      current {{ current }}
       <div>
-        <GmapMap
+        <gmap-map
           :center="center"
           :zoom="10"
           map-type-id="terrain"
         >
-          <GmapMarker
+          <gmap-marker
             :key="index"
             v-for="(m, index) in markers"
             :position="m.position"
             :clickable="true"
             @click="showCurrentBattery(m)"
           />
-        </GmapMap>
+        </gmap-map>
+      </div>
+      <div v-if="current">
+        <div>
+          <h3>車両情報</h3>
+          <code>{{ current.vehicle }}</code>
+        </div>
+        <div>
+          <h3>バッテリー情報</h3>
+          <code>{{ current.battery }}</code>
+        </div>
       </div>
     </main>
-    <footer>
-      <the-button type="logout" @click="doLogout">ログアウト</the-button>
-    </footer>
   </div>
 </template>
 
 <script>
+  import { vehicleListPath } from '~/secret/vehicleApiConfig'
+
   export default {
     data() {
       return {
         center: { lat: 28.458330, lng: 77.070976 },
         current: null,
         batteryList: [],
+        vehicleList: [],
       }
     },
     computed: {
@@ -40,8 +49,8 @@
       markers() {
         return this.batteryList.filter(b => b.LAT && b.LNG).map(b => {
           return {
+            id: b.TID,
             data: b,
-            title: b.TID,
             position: {
               lat: Number(b.LAT),
               lng: Number(b.LNG),
@@ -51,15 +60,25 @@
       },
     },
     methods: {
-      async doLogout() {
-        this.$auth().signOut()
+      async setVehicleList() {
+        try {
+          const { data } = await this.$api.post(vehicleListPath)
+          this.vehicleList = data.Data
+        } catch (e) {
+          alert(e.message)
+          console.error(e)
+        }
       },
       showCurrentBattery(marker) {
         this.center = marker.position
-        this.current = marker.data
+        this.current = {
+          battery: marker.data,
+          vehicle: this.vehicleList.find(v => v.tms === marker.id),
+        }
       },
     },
-    async mounted() {
+    mounted() {
+      this.setVehicleList()
       this.$db.collection('battery').
         onSnapshot(snapshot => {
           this.batteryList = snapshot.docs.map(doc => {

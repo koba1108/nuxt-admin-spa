@@ -32,6 +32,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~/plugins/api.js',
     '~/plugins/firebase.js',
     '~/plugins/components.js',
     '~/plugins/vue2-google-maps.js',

@@ -12,6 +12,7 @@
     "deploy": "nuxt generate && firebase deploy --only hosting --project=project-nymbus"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "cross-env": "^5.2.0",
     "nuxt": "^2.4.0",
     "firebase": "^7.9.2",

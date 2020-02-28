@@ -1,13 +1,18 @@
 <template>
-  <ul>
-    <li
-      v-for="p in pathList"
-      :key="p.path"
-      @click="goPage(p)"
-    >
-      <a>{{ p.title }}</a>
-    </li>
-  </ul>
+  <header>
+    <ul>
+      <li
+        v-for="p in pathList"
+        :key="p.path"
+        @click="goPage(p)"
+      >
+        <a>{{ p.title }}</a>
+      </li>
+    </ul>
+    <div>
+      <the-button type="logout" @click="doLogout">ログアウト</the-button>
+    </div>
+  </header>
 </template>
 
 <script>
@@ -38,6 +43,9 @@
     methods: {
       goPage({ path }) {
         this.$router.push(path)
+      },
+      doLogout() {
+        this.$auth().signOut()
       },
     },
   }
