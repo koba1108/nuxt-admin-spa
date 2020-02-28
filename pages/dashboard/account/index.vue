@@ -5,9 +5,11 @@
       <header>
         <the-button type="add" @click="goAddPage">追加</the-button>
       </header>
-      <div>
-        todo: ここに一覧を出す
-        <the-button type="edit" @click="goEditPage('1')">編集</the-button>
+      <div v-for="u in authUsers" :key="u.uid">
+        <div>uid: {{ u.uid }}</div>
+        <div>displayName: {{ u.displayName }}</div>
+        <div>email: {{ u.email }}</div>
+        <the-button type="edit" @click="goEditPage(u.uid)">編集</the-button>
       </div>
     </main>
   </div>
@@ -15,20 +17,30 @@
 
 <script>
   export default {
-    computed: {
-      // ここらへんを使えるAPIをCloudFunctionsに生やす
-      // https://firebase.google.com/docs/auth/admin/manage-users?hl=ja
-      adminUsers() {
-        return []
-      },
+    data() {
+      return {
+        authUsers: [],
+      }
     },
     methods: {
       async goAddPage() {
         this.$router.push('/dashboard/account/add')
       },
-      async goEditPage(id) {
-        this.$router.push(`/dashboard/account/edit/${id}`)
+      async goEditPage(uid) {
+        this.$router.push(`/dashboard/account/edit/${uid}`)
       },
+      async setAuthUsers() {
+        try {
+          const { data } = await this.$authUser.list()
+          this.authUsers = data.users
+        } catch (e) {
+          alert(e.message)
+          console.error(e)
+        }
+      },
+    },
+    created() {
+      this.setAuthUsers()
     },
   }
 </script>
