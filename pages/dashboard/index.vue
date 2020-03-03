@@ -79,7 +79,7 @@
       this.setVehicleList()
       this.$db.collection('battery').
         onSnapshot(snapshot => {
-          this.batteryList = snapshot.docs.map(doc =>  doc.data())
+          this.batteryList = snapshot.docs.map(doc => doc.data())
         })
     },
   }

@@ -1,0 +1,151 @@
+/* BASIC */
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: 'Lato', 'Noto Sans JP',
+  'ヒラギノ角ゴ ProN',
+  'Hiragino Kaku Gothic ProN',
+  'メイリオ', Meiryo,
+  'ＭＳ Ｐゴシック',
+  'MS PGothic',
+  sans-serif;
+  height: 100vh;
+}
+
+header {
+  border-top: #337ab7 0.5rem solid;
+  border-bottom: #ddd 0.25rem solid;
+  position: fixed;
+  width: 100%;
+  background: #fff;
+  z-index: 100;
+
+  h1 {
+    color: #7b7979;
+  }
+}
+
+/* STRUCTURE */
+.wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+  padding: 20px;
+}
+
+.login_title {
+  max-width: 450px;
+  //background: #ddd;
+  display: flex;
+
+  .line {
+    background-repeat: repeat-x;
+    background-position: left center;
+    width: 35%;
+  }
+
+  h2 {
+    width: 30%;
+    background: none;
+  }
+}
+
+#formContent {
+  background: #f7f7f7;
+  padding: 12px 6px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+/*
+h2.inactive {
+  color: #cccccc;
+}
+
+h2.active {
+  color: #0d0d0d;
+  border-bottom: 2px solid #5fbae9;
+}
+*/
+
+
+/* FORM TYPOGRAPHY*/
+
+input[type=button], input[type=submit], input[type=reset] {
+  //background-color: #56baed;
+  border: none;
+  color: white;
+  //padding: 15px 80px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 13px;
+  //-webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
+  //box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
+  //-webkit-border-radius: 5px 5px 5px 5px;
+  //border-radius: 5px 5px 5px 5px;
+  //margin: 5px 20px 40px 20px;
+  //-webkit-transition: all 0.3s ease-in-out;
+  //-moz-transition: all 0.3s ease-in-out;
+  //-ms-transition: all 0.3s ease-in-out;
+  //-o-transition: all 0.3s ease-in-out;
+  //transition: all 0.3s ease-in-out;
+}
+
+input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
+  //background-color: #da0f0f;
+}
+
+input[type=button]:active, input[type=submit]:active, input[type=reset]:active {
+  -moz-transform: scale(0.95);
+  -webkit-transform: scale(0.95);
+  -o-transform: scale(0.95);
+  -ms-transform: scale(0.95);
+  transform: scale(0.95);
+}
+
+input[type=text] {
+  //background-color: #f6f6f6;
+  border: none;
+  color: #999;
+  padding: 0.375rem 0.75rem;
+  //text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  //margin: 5px;
+  //width: 85%;
+  width: 100%;
+  border: 1px solid #ddd;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+  //-webkit-border-radius: 5px 5px 5px 5px;
+  //border-radius: 5px 5px 5px 5px;
+}
+
+input[type=text]:focus {
+  background-color: #fff;
+  border-bottom: 2px solid #5fbae9;
+}
+
+input[type=text]:placeholder {
+  color: #cccccc;
+}
+
+/* OTHERS */
+
+*:focus {
+  outline: none;
+}
