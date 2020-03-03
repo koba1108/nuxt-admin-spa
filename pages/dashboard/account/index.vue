@@ -1,24 +1,54 @@
 <template>
-  <div>
-    <header>アカウント一覧</header>
-    <main>
-      <header>
-        <the-button type="add" @click="goAddPage">追加</the-button>
-      </header>
-      <div v-for="u in authUsers" :key="u.uid">
-        <div>uid: {{ u.uid }}</div>
-        <div>displayName: {{ u.displayName }}</div>
-        <div>email: {{ u.email }}</div>
-        <the-button type="edit" @click="goEditPage(u.uid)">編集</the-button>
-      </div>
-    </main>
-  </div>
+  <v-card>
+    <v-card-title>
+      アカウント一覧
+      <v-spacer/>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+        class="mr-4"
+      />
+      <v-btn color="info" @click="goAddPage">追加</v-btn>
+    </v-card-title>
+    <v-card-text>
+      <v-data-table
+        :search="search"
+        :loading="authUsers.length < 1"
+        :headers="headers"
+        :items="authUsers"
+        :footer-props="footerProps"
+        no-data-text="データがありません。"
+      >
+        <template v-slot:item.action="{ item }">
+          <v-btn nuxt small text :to="`/dashboard/account/edit/${item.uid}`">
+            <v-icon>mdi-table-edit</v-icon>
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
   export default {
     data() {
       return {
+        search: '',
+        headers: [
+          { text: 'UserId', align: 'left', value: 'uid' },
+          { text: 'ユーザ名', align: 'left', value: 'displayName' },
+          { text: 'メールアドレス', align: 'left', value: 'email' },
+          { text: '作成日時', align: 'left', value: 'metadata.creationTime' },
+          { text: '最終ログイン', align: 'left', value: 'metadata.lastSignInTime' },
+          { text: '編集', align: 'center', sortable: false, value: 'action' },
+        ],
+        footerProps: {
+          'items-per-page-options': [100, 200, 300, 400, 500],
+          showFirstLastPage: true,
+        },
         authUsers: [],
       }
     },

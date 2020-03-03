@@ -1,14 +1,20 @@
 <template>
-  <div>
-    <header>アカウント編集</header>
-    <main>
-      <input type="text" v-model="form.displayName">
-      <input type="email" v-model="form.email">
-      <input type="password" v-model="form.password" autocomplete="new-password">
-      <the-button type="edit" @click="update">更新する</the-button>
-      <the-button type="delete" @click="remove">削除する</the-button>
-    </main>
-  </div>
+  <v-card>
+    <v-card-title>
+      アカウント編集
+      <v-spacer/>
+    </v-card-title>
+    <v-card-text>
+      <v-form ref="form" lazy-validation>
+        <v-text-field v-model="form.displayName" label="displayName" required/>
+        <v-text-field v-model="form.email" label="email" required/>
+        <v-text-field v-model="form.password" label="password" type="password"/>
+        <v-btn color="success" @click="update">更新</v-btn>
+        <v-btn color="error" @click="remove">削除</v-btn>
+        <v-btn color="info" @click="goListPage">戻る</v-btn>
+      </v-form>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
@@ -66,6 +72,9 @@
           this.form.email = data.user.email
         }
       },
+      goListPage() {
+        this.$router.push('/dashboard/account')
+      }
     },
     created() {
       this.fetchAuthUser()

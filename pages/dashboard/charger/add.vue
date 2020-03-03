@@ -1,23 +1,20 @@
 <template>
-  <div>
-    <header>Charger追加</header>
-    <main>
-      <label>
-        name: <input type="text" v-model="form.name">
-      </label>
-      <label>
-        cs_id: <input type="text" v-model="form.cs_id">
-      </label>
-      <label>
-        longitude: <input type="number" v-model.number="form.longitude" step="0.000001">
-      </label>
-      <label>
-        latitude: <input type="number" v-model.number="form.latitude" step="0.000001">
-      </label>
-      <the-button type="add" @click="add" :disabled="isInvalid">追加する</the-button>
-      <the-button type="edit" @click="goListPage">戻る</the-button>
-    </main>
-  </div>
+  <v-card>
+    <v-card-title>
+      Charger追加
+      <v-spacer/>
+    </v-card-title>
+    <v-card-text>
+      <v-form ref="form" lazy-validation>
+        <v-text-field v-model="form.name" label="name" required/>
+        <v-text-field v-model="form.cs_id" label="cs_id" required/>
+        <v-text-field v-model.number="form.longitude" type="number" step="0.000001"/>
+        <v-text-field v-model.number="form.latitude" type="number" step="0.000001"/>
+        <v-btn color="success" :disabled="isInvalid" @click="add">追加する</v-btn>
+        <v-btn color="info" @click="goListPage">戻る</v-btn>
+      </v-form>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>

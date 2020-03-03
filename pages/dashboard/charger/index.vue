@@ -1,29 +1,54 @@
 <template>
-  <div>
-    <header>Charger一覧</header>
-    <main>
-      <header>
-        <the-button type="add" @click="goAddPage">追加</the-button>
-      </header>
-      <div>
-        <div v-for="cs in chargerStations" :key="cs.id">
-          <div>id: {{ cs.id }}</div>
-          <div>name: {{ cs.name }}</div>
-          <div>cs_id: {{ cs.cs_id }}</div>
-          <div>longitude: {{ cs.longitude }}</div>
-          <div>latitude: {{ cs.latitude }}</div>
-          <the-button type="edit" @click="goEditPage(cs.id)">編集</the-button>
-          <hr>
-        </div>
-      </div>
-    </main>
-  </div>
+  <v-card>
+    <v-card-title>
+      Charger一覧
+      <v-spacer/>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+        class="mr-4"
+      />
+      <v-btn color="info" @click="goAddPage">追加</v-btn>
+    </v-card-title>
+    <v-card-text>
+      <v-data-table
+        :search="search"
+        :loading="chargerStations.length < 1"
+        :headers="headers"
+        :footer-props="footerProps"
+        :items="chargerStations"
+        no-data-text="データがありません。"
+      >
+        <template v-slot:item.action="{ item }">
+          <v-btn nuxt small text :to="`/dashboard/charger/edit/${item.id}`">
+            <v-icon>mdi-table-edit</v-icon>
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
   export default {
     data() {
       return {
+        search: '',
+        headers: [
+          { text: 'id', align: 'left', value: 'id' },
+          { text: '名前', align: 'left', value: 'name' },
+          { text: 'cs_id', align: 'left', value: 'cs_id' },
+          { text: 'longitude', align: 'left', value: 'longitude' },
+          { text: 'latitude', align: 'left', value: 'latitude' },
+          { text: '編集', align: 'center', sortable: false, value: 'action' },
+        ],
+        footerProps: {
+          'items-per-page-options': [100, 200, 300, 400, 500],
+          showFirstLastPage: true,
+        },
         chargerStations: [],
       }
     },
