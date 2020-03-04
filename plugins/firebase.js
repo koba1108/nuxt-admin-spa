@@ -11,7 +11,7 @@ export default async ({ app, env, store }, inject) => {
   }
   const functions = firebase.app().functions('asia-east2')
   if(location.hostname === 'localhost') {
-    functions.useFunctionsEmulator('http://localhost:5001')
+    functions.useFunctionsEmulator('http://localhost:5000')
   }
 
   inject('firebase', firebase)
