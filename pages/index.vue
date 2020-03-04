@@ -27,26 +27,32 @@
                     v-model="password"
                   />
                 </v-form>
+                <v-card-actions>
+                  <v-row justify="center">
+                    <v-btn color="primary" @click="doLogin">Login</v-btn>
+                    <v-btn class="ml-8" text small @click="modalActive=true">Forgot password</v-btn>
+                  </v-row>
+                </v-card-actions>
               </v-card-text>
-              <v-card-actions>
-                <v-spacer/>
-                <v-btn color="primary" @click="doLogin">Login</v-btn>
-              </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
       </v-container>
     </v-content>
+    <v-row justify="center">
+      <v-dialog v-model="modalActive" max-width="600px">
+        <password-reset-form/>
+      </v-dialog>
+    </v-row>
   </v-app>
 </template>
-
 
 <script>
   export default {
     layout: 'clean',
     data() {
       return {
-        drawer: null,
+        modalActive: false,
         email: '',
         password: '',
       }
