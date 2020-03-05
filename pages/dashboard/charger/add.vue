@@ -1,9 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
-      Charger追加
-      <v-spacer/>
-    </v-card-title>
+    <v-card-title>Charger追加</v-card-title>
     <v-card-text>
       <v-form ref="form" lazy-validation>
         <v-text-field v-model="form.name" label="name" required/>
@@ -11,11 +8,12 @@
         <v-text-field v-model.number="form.longitude" type="number" step="0.000001"/>
         <v-text-field v-model.number="form.latitude" type="number" step="0.000001"/>
       </v-form>
+      <v-card-actions>
+        <v-spacer/>
+        <v-btn color="success" :disabled="isInvalid" @click="add">追加する</v-btn>
+        <v-btn color="info" @click="goListPage">戻る</v-btn>
+      </v-card-actions>
     </v-card-text>
-    <v-card-actions class="align-end">
-      <v-btn color="success" :disabled="isInvalid" @click="add">追加する</v-btn>
-      <v-btn color="info" @click="goListPage">戻る</v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
