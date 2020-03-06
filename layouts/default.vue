@@ -2,6 +2,12 @@
   <v-app>
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
+        <v-img
+          class="align-end"
+          height="64px"
+          src="/img/logo/bg-transparent.png"
+          contain
+        />
         <v-subheader>メイン</v-subheader>
         <v-list-item
           v-for="p in pathList"

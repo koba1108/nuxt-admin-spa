@@ -5,23 +5,25 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <v-card class="elevation-12">
-              <v-toolbar color="primary" dark flat>
-                <v-toolbar-title>Login form</v-toolbar-title>
-                <v-spacer/>
-              </v-toolbar>
+              <v-img
+                class="white--text align-end"
+                height="200px"
+                src="/img/logo/bg-white.jpg"
+              />
               <v-card-text>
                 <v-form>
                   <v-text-field
-                    label="Login"
-                    name="login"
+                    id="email"
+                    name="email"
+                    placeholder="Login"
                     prepend-icon="person"
-                    type="text"
+                    type="email"
                     v-model="email"
                   />
                   <v-text-field
                     id="password"
-                    label="Password"
                     name="password"
+                    placeholder="Password"
                     prepend-icon="lock"
                     type="password"
                     v-model="password"
