@@ -13,7 +13,6 @@
         </v-simple-table>
       </v-card>
     </v-col>
-
     <v-col v-for="g in graphs" :key="g.id" cols="12">
       <v-card>
         <v-card-title>
@@ -54,6 +53,10 @@
         @click:date="setPickedDate"
       />
     </v-dialog>
+
+    <v-btn @click="getBatteryData">query</v-btn>
+    {{ resultSet }}
+
   </v-row>
 </template>
 
@@ -108,6 +111,7 @@
           active: false,
           width: 290,
         },
+        resultSet: null
       }
     },
     computed: {
@@ -159,6 +163,11 @@
         }
         this.dialog.active = false
       },
+      async getBatteryData() {
+        const { data } = await this.$battery.list()
+        console.log('getBatteryData', data)
+        this.resultSet = data
+      }
     },
     mounted() {
       this.graphs.map(g => g.chartData = this.fetchData())

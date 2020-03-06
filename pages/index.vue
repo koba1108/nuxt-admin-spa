@@ -5,12 +5,13 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <v-card class="elevation-12">
-              <v-img
-                class="white--text align-end"
-                height="200px"
-                src="/img/logo/bg-white.jpg"
-              />
               <v-card-text>
+                <v-img
+                  class="white--text align-end"
+                  height="150px"
+                  src="/img/logo/bg-transparent.png"
+                  contain
+                />
                 <v-form>
                   <v-text-field
                     id="email"

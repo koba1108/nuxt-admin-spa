@@ -3,7 +3,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
 
-import { nymbus } from '~/secret/firebaseConfig'
+import { nymbus,localFunctionUrl } from '~/secret/firebaseConfig'
 
 export default async ({ app, env, store }, inject) => {
   if(!firebase.apps.length) {
@@ -11,7 +11,11 @@ export default async ({ app, env, store }, inject) => {
   }
   const functions = firebase.app().functions('asia-east2')
   if(location.hostname === 'localhost') {
-    functions.useFunctionsEmulator('http://localhost:5000')
+    functions.useFunctionsEmulator(localFunctionUrl)
+  }
+
+  const callableOption = {
+    timeout: 550000,
   }
 
   inject('firebase', firebase)
@@ -23,6 +27,9 @@ export default async ({ app, env, store }, inject) => {
     add: functions.httpsCallable('addAuth'),
     update: functions.httpsCallable('editAuth'),
     delete: functions.httpsCallable('deleteAuth'),
+  })
+  inject('battery', {
+    list: functions.httpsCallable('getBatteryList', callableOption),
   })
   inject('vehicleList', {
     get: functions.httpsCallable('getVehicleList'),
