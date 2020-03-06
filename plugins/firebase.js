@@ -3,7 +3,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
 
-import { nymbus,localFunctionUrl } from '~/secret/firebaseConfig'
+import { nymbus, localFunctionUrl } from '~/secret/firebaseConfig'
 
 export default async ({ app, env, store }, inject) => {
   if(!firebase.apps.length) {
