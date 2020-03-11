@@ -1,12 +1,19 @@
 import Vue from 'vue'
 import { Line, mixins } from 'vue-chartjs'
 
-const { reactiveProp } = mixins
-
 Vue.component('line-chart', {
   extends: Line,
-  mixins: [reactiveProp],
-  props: ['options'],
+  mixins: [mixins.reactiveProp],
+  props: ['chartData', 'options'],
+  watch: {
+    'options': {
+      handler(newOption, oldOption) {
+        this.$data._chart.destroy()
+        this.renderChart(this.chartData, this.options)
+      },
+      deep: true,
+    },
+  },
   mounted() {
     this.renderChart(this.chartData, this.options)
   },

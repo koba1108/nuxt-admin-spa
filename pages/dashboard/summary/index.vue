@@ -1,176 +1,104 @@
 <template>
   <v-row>
-    <v-col cols="12">
-      <v-card>
-        <v-card-title>TOP5</v-card-title>
-        <v-simple-table :fixed-header="true">
-          <tbody>
-          <tr v-for="(t) in top5" :key="t.key">
-            <td>{{ t.key }}</td>
-            <td>{{ t.text }}</td>
-          </tr>
-          </tbody>
-        </v-simple-table>
-      </v-card>
-    </v-col>
-    <v-col v-for="g in graphs" :key="g.id" cols="12">
-      <v-card>
-        <v-card-title>
-          <v-row>
-            <v-col cols="4">
-              <v-card-title>{{ g.name }}</v-card-title>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="g.selected.from"
-                type="date"
-                label="From"
-                prepend-icon="event"
-                @click="openDatepicker('from', g)"
-              />
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="g.selected.to"
-                type="date"
-                label="To"
-                prepend-icon="event"
-                @click="openDatepicker('to', g)"
-              />
-            </v-col>
-          </v-row>
-        </v-card-title>
-        <v-card-text v-if="g.chartData" class="h-500px">
-          <line-chart :chart-data="g.chartData" :options="chartOptions"/>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-dialog :max-width="dialog.width" v-model="dialog.active">
-      <v-date-picker
-        show-current
-        no-title
-        reactive
-        @click:date="setPickedDate"
+    <driver-top5/>
+    <graph-wrapper>
+      <graph-header
+        slot="header"
+        title="TDT"
+        :from="from"
+        :to="to"
+        :unit="currentUnit"
+        :select-items="vehicleIds"
+        :selected="currentVehicleId"
+        @itemSelected="setCurrentVehicle"
+        @fromSelected="setFromDate"
+        @toSelected="setToDate"
+        @unitSelected="setUnit"
       />
-    </v-dialog>
-
-    <v-btn @click="getBatteryData">query</v-btn>
-    {{ resultSet }}
-
+      <template slot="chart">
+        <v-skeleton-loader
+          v-if="loading"
+          slot="chart"
+          class="mx-auto"
+          type="card"
+          tile
+        />
+        <tdt-graph
+          v-else-if="chartLogs.length > 0"
+          :unit="currentUnit"
+          :logs="chartLogs"
+          :current-vehicle="currentVehicle"
+        />
+        <v-card-title v-else>data not found.</v-card-title>
+      </template>
+    </graph-wrapper>
   </v-row>
 </template>
 
 <script>
-  const range = (min, max) => Array.from(Array(max + 1).keys()).filter(n => n >= min)
-  const randInt = () => Math.floor(Math.random() * (50 - 5 + 1)) + 5
-  const makeTestData = () => range(1, 12).map(i => randInt())
-
-  const TOP5 = [
-    { key: 'driver_key1', text: '10000km' },
-    { key: 'driver_key2', text: '1000km' },
-    { key: 'driver_key3', text: '100km' },
-    { key: 'driver_key4', text: '10km' },
-    { key: 'driver_key5', text: '1km' },
-  ]
-
-  const GRAPHS = [
-    {
-      id: 'graph_1',
-      name: 'グラグその1',
-      chartData: null,
-      selected: {
-        from: null,
-        to: null,
-      },
-    },
-    {
-      id: 'graph_2',
-      name: 'グラグその2',
-      chartData: null,
-      selected: {
-        from: null,
-        to: null,
-      },
-    },
-  ]
-
-  const TYPE_FROM = 'from'
-  const TYPE_TO = 'to'
-  const TARGET_TYPES = [TYPE_FROM, TYPE_TO]
+  import { COLLECTION_NAME_BATTERY_LOG, UNIT_TYPES } from '~/model/define'
 
   export default {
     data() {
+      const today = this.$moment().format('YYYY-MM-DD')
       return {
-        top5: TOP5, // todo: fetch from API
-        graphs: GRAPHS,
-        picker: {
-          type: null, // TYPE_FROM or TYPE_TO
-          graphId: null,
-        },
-        dialog: {
-          active: false,
-          width: 290,
-        },
-        resultSet: null
+        loading: true,
+        from: today,
+        to: today,
+        batteryLogs: [],
+        currentUnit: UNIT_TYPES[0],
+        currentVehicleId: '',
+        vehicleList: [],
       }
     },
     computed: {
-      chartOptions() {
-        return {
-          responsive: true,
-          maintainAspectRatio: false,
-        }
+      vehicleIds() {
+        const vno2Num = (str) => Number(str.replace('VNo', ''))
+        return this.arrayUnique(this.vehicleList.map(v => v.vehiclenumber)).
+          sort((a, b) => vno2Num(a) > vno2Num(b) ? 1 : -1)
+      },
+      currentVehicle() {
+        return this.currentVehicleId
+          ? this.vehicleList.find(v => v.vehiclenumber === this.currentVehicleId)
+          : null
+      },
+      chartLogs() {
+        const from = this.from + ' 00:00:00'
+        const to = this.to + ' 23:59:59'
+        return this.batteryLogs.
+          // from でフィルター
+          filter(bl => this.$moment(from).unix() <= bl.UpdatedAt.seconds).
+          filter(bl => this.$moment(to).unix() >= bl.UpdatedAt.seconds)
       },
     },
     methods: {
-      fetchData() {
-        return {
-          labels: range(1, 12).map(i => `${i}月`),
-          datasets: [
-            {
-              label: 'Test Data1',
-              animation: true,
-              backgroundColor: 'rgba(255, 100, 130, 0.2)',
-              data: makeTestData(),
-            },
-            {
-              label: 'Test Data2',
-              animation: true,
-              backgroundColor: 'rgba(100, 130, 255, 0.2)',
-              data: makeTestData(),
-            },
-            {
-              label: 'Test Data3',
-              animation: true,
-              backgroundColor: 'rgba(130, 255, 100, 0.2)',
-              data: makeTestData(),
-            },
-          ],
-        }
+      async setVehicleList() {
+        const { data } = await this.$vehicleList.get()
+        this.vehicleList = data.Data
       },
-      openDatepicker(selectedType, graph) {
-        if(TARGET_TYPES.includes(selectedType)) {
-          this.picker.graphId = graph.id
-          this.picker.type = selectedType
-          this.dialog.active = true
-        }
+      setCurrentVehicle(vid) {
+        this.currentVehicleId = vid ? vid : ''
       },
-      setPickedDate(pickedDate) {
-        if(TARGET_TYPES.includes(this.picker.type)) {
-          const currentGraph = this.graphs.find(g => g.id === this.picker.graphId)
-          currentGraph.selected[this.picker.type] = pickedDate
-          currentGraph.chartData = this.fetchData()
-        }
-        this.dialog.active = false
+      setFromDate(from) {
+        this.from = from
       },
-      async getBatteryData() {
-        const { data } = await this.$battery.list()
-        console.log('getBatteryData', data)
-        this.resultSet = data
-      }
+      setToDate(to) {
+        this.to = to
+      },
+      setUnit(unit) {
+        this.currentUnit = unit
+      },
+      async fetchLogs() {
+        const docs = await this.$db.collectionGroup(COLLECTION_NAME_BATTERY_LOG).get()
+        const batteryLogs = []
+        docs.forEach(doc => batteryLogs.push(doc.data()))
+        this.batteryLogs = batteryLogs.sort((a, b) => a.UpdatedAt > b.UpdatedAt ? 1 : -1)
+        this.loading = false
+      },
     },
     mounted() {
-      this.graphs.map(g => g.chartData = this.fetchData())
+      this.setVehicleList()
+      this.fetchLogs()
     },
   }
 </script>

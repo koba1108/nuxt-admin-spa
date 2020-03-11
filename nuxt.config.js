@@ -38,6 +38,7 @@ export default {
     '~/plugins/chart',
     '~/plugins/components.js',
     '~/plugins/firebase.js',
+    '~/plugins/global-mixin.js',
     '~/plugins/vue2-google-maps.js',
   ],
 
@@ -47,6 +48,7 @@ export default {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/moment',
     '@nuxtjs/vuetify',
     '@nuxtjs/style-resources',
   ],

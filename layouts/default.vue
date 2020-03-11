@@ -8,7 +8,7 @@
           src="/img/logo/bg-transparent.png"
           contain
         />
-        <v-subheader>メイン</v-subheader>
+        <v-subheader>Main</v-subheader>
         <v-list-item
           v-for="p in pathList"
           :key="p.path"
@@ -23,13 +23,13 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-subheader>ログアウト</v-subheader>
+        <v-subheader>Logout</v-subheader>
         <v-list-item @click="doLogout" link>
           <v-list-item-action>
             <v-icon>mdi-logout</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>ログアウト</v-list-item-title>
+            <v-list-item-title>Logout</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -37,7 +37,7 @@
 
     <v-app-bar app color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
-      <v-toolbar-title>運行管理システム</v-toolbar-title>
+      <v-toolbar-title>Fleet Management System</v-toolbar-title>
     </v-app-bar>
 
     <v-content>
@@ -53,22 +53,22 @@
   const menuItems = [
     {
       icon: 'mdi-google-maps',
-      title: '監視',
+      title: 'Monitoring',
       path: '/dashboard/map',
     },
     {
       icon: 'mdi-table',
-      title: '集計',
+      title: 'Aggregate',
       path: '/dashboard/summary',
     },
     {
       icon: 'mdi-account',
-      title: 'アカウント管理',
+      title: 'Account',
       path: '/dashboard/account',
     },
     {
       icon: 'mdi-battery-charging-90',
-      title: 'Charger管理',
+      title: 'Charger',
       path: '/dashboard/charger',
     },
   ]
