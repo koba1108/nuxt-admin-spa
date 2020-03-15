@@ -14,10 +14,6 @@ export default async ({ app, env, store }, inject) => {
     functions.useFunctionsEmulator(localFunctionUrl)
   }
 
-  const callableOption = {
-    timeout: 550000,
-  }
-
   inject('firebase', firebase)
   inject('auth', firebase.auth)
   inject('db', firebase.firestore())
@@ -29,7 +25,7 @@ export default async ({ app, env, store }, inject) => {
     delete: functions.httpsCallable('deleteAuth'),
   })
   inject('battery', {
-    list: functions.httpsCallable('getBatteryList', callableOption),
+    logs: functions.httpsCallable('getBatteryLogs'),
   })
   inject('vehicleList', {
     get: functions.httpsCallable('getVehicleList'),

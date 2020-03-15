@@ -4,7 +4,7 @@
       <v-card>
         <v-card-title>
           <v-toolbar height="35" flat>
-            <v-toolbar-title>車両情報</v-toolbar-title>
+            <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
             <v-btn color="info" @click="setVehicleList">
               <v-icon>update</v-icon>
@@ -30,37 +30,15 @@
     </v-col>
 
     <template v-if="current">
-      <v-col cols="6">
+      <v-col cols="12">
         <v-card>
-          <v-card-title color="primary">車両情報</v-card-title>
+          <v-card-title color="primary">Battery Info</v-card-title>
           <v-card-text>
-            <v-simple-table
-              :fixed-header="isFixedHeader"
-              :height="tblHeight"
-            >
-              <tbody>
-              <tr v-for="(value, key) in vehicleInfo" :key="key">
-                <td>{{ key }}</td>
-                <td>{{ value }}</td>
-              </tr>
-              </tbody>
-            </v-simple-table>
-          </v-card-text>
-        </v-card>
-      </v-col>
-
-      <v-col cols="6">
-        <v-card>
-          <v-card-title color="primary">バッテリー情報</v-card-title>
-          <v-card-text>
-            <v-simple-table
-              :fixed-header="isFixedHeader"
-              :height="tblHeight"
-            >
+            <v-simple-table :fixed-header="isFixedHeader">
               <tbody>
               <tr v-for="(value, key) in batteryInfo" :key="key">
                 <td>{{ key }}</td>
-                <td>{{ value }}</td>
+                <td>{{ value | addUnit(key) }}</td>
               </tr>
               </tbody>
             </v-simple-table>
@@ -68,14 +46,11 @@
         </v-card>
       </v-col>
 
-      <v-col cols="6">
+      <v-col cols="12">
         <v-card>
-          <v-card-title color="primary">バッテリー情報</v-card-title>
+          <v-card-title color="primary">Alert Info</v-card-title>
           <v-card-text>
-            <v-simple-table
-              :fixed-header="isFixedHeader"
-              :height="tblHeight"
-            >
+            <v-simple-table :fixed-header="isFixedHeader">
               <tbody>
               <tr v-for="(value, key) in batteryAlertInfo" :key="key">
                 <td>{{ key }}</td>
@@ -87,43 +62,43 @@
         </v-card>
       </v-col>
 
-      <v-col cols="6">
-        <v-card>
-          <v-card-title color="primary">アラート情報</v-card-title>
-          <v-card-text>
-            <v-simple-table
-              :fixed-header="isFixedHeader"
-              :height="tblHeight"
-            >
-              <tbody>
-              <tr v-for="(value, key) in chargerAlertInfo" :key="key">
-                <td>{{ key }}</td>
-                <td>{{ value }}</td>
-              </tr>
-              </tbody>
-            </v-simple-table>
-          </v-card-text>
-        </v-card>
-      </v-col>
-
-
     </template>
   </v-row>
 </template>
 
 <script>
+  // unit => keys
+  const unitMap = {
+    BV: 'V',
+    BI: 'A',
+    SOC: '%',
+    TS: '℃',
+    TDT: 'km',
+    SPD: 'km/hr',
+  }
+
+  const center = { lat: 28.458330, lng: 77.070976 }
+
   export default {
+    filters: {
+      addUnit(val, key) {
+        if(unitMap.hasOwnProperty(key)) {
+          return `${val}${unitMap[key]}`
+        }
+        return val
+      },
+    },
     data() {
       return {
-        tblHeight: 300,
         isFixedHeader: true,
-        center: { lat: 28.458330, lng: 77.070976 },
+        center: center,
         current: null,
         batteryList: [],
         vehicleList: [],
       }
     },
     computed: {
+      title: () => 'MAP',
       // markerのUIライブラリ
       // https://vuejsexamples.com/vue-2-google-map-custom-marker-component/
       markers() {
@@ -138,28 +113,30 @@
           }
         })
       },
-      vehicleInfo() {
-        return this.current.vehicle
-      },
+      // todo: バッテリーと車の出し分け
       batteryInfo() {
-        return this.current.battery
-      },
-      batteryAlertInfo() {
+        const { drivername, vehiclename } = this.current.vehicle ? this.current.vehicle : {}
+        const { TID, BV, BI, SOC, TS, TDT, SPD } = this.current.battery
         return {
-          Battery1: '',
-          Battery2: '',
-          Battery3: 'Low SOC Warning',
-          Battery1_3: 'Hardware Fault Batt3',
-          Telematics: 'Battery Full Charged',
+          TID,
+          BV,
+          BI,
+          SOC,
+          TS,
+          TDT,
+          SPD,
+          DriverName: drivername || '',
+          VehicleName: vehiclename || '',
         }
       },
-      chargerAlertInfo() {
+      batteryAlertInfo() {
+        const { AL1, AL2, AL3, AL4, ST1 } = this.current.battery
         return {
-          S1: 'Low Voltage in Y-Phase',
-          S2: '',
-          S3: 'Over load in Socket 1',
-          SystemHealthStatus: 'Full System Fault',
-          EmergencySwitchStatus: 'Emergency Fault',
+          Battery1: AL1,
+          Battery2: AL2,
+          Battery3: AL3,
+          'Battery 1-3': AL4,
+          Telematics: ST1,
         }
       },
     },

@@ -23,19 +23,19 @@
     </v-col>
     <v-col cols="3">
       <v-select
-        :value="selected"
-        @input="$emit('itemSelected', $event)"
-        :items="selectItems"
-        label="Select Vehicle Name"
+        :value="unit"
+        @input="$emit('unitSelected', $event)"
+        :items="UNIT_TYPES"
+        label="Select Unit"
         clearable
       />
     </v-col>
     <v-col cols="3">
       <v-select
-        :value="unit"
-        @input="$emit('unitSelected', $event)"
-        :items="UNIT_TYPES"
-        label="Select Unit"
+        :value="selected"
+        @input="$emit('itemSelected', $event)"
+        :items="selectItems"
+        label="Select Vehicle Name"
         clearable
       />
     </v-col>

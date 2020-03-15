@@ -7,7 +7,7 @@
         title="TDT"
         :from="from"
         :to="to"
-        :unit="unit"
+        :unit="currentUnit"
         :select-items="vehicleIds"
         :selected="currentVehicleId"
         @itemSelected="setCurrentVehicle"
@@ -18,14 +18,16 @@
       <template slot="chart">
         <v-skeleton-loader
           v-if="loading"
-          type="card"
+          slot="chart"
           class="mx-auto"
+          type="card"
           tile
         />
-        <graph-tdt
+        <tdt-graph
           v-else-if="chartLogs.length > 0"
+          :unit="currentUnit"
           :logs="chartLogs"
-          :unit="unit"
+          :current-vehicle="currentVehicle"
         />
         <v-card-title v-else>data not found.</v-card-title>
       </template>
@@ -36,7 +38,7 @@
 </template>
 
 <script>
-  import { UNIT_TYPES } from '~/model/define'
+  import { COLLECTION_NAME_BATTERY_LOG, UNIT_TYPES } from '~/model/define'
 
   export default {
     data() {
@@ -45,37 +47,30 @@
         loading: true,
         from: today,
         to: today,
-        logs: [],
-        unit: UNIT_TYPES[0],
+        batteryLogs: [],
+        currentUnit: UNIT_TYPES[0],
         currentVehicleId: '',
         vehicleList: [],
       }
     },
     computed: {
       vehicleIds() {
-        const prefix = 'TMS' // 'VNo'
-        const key = 'tms' // 'vehiclenumber'
-        const keyToNum = (str) => Number(str.replace(prefix, ''))
-        return this.arrayUnique(this.vehicleList.map(v => v[key])).
-          filter(tms => tms !== 'TMS........').
-          sort((a, b) => keyToNum(a) > keyToNum(b) ? 1 : -1)
+        const vno2Num = (str) => Number(str.replace('VNo', ''))
+        return this.arrayUnique(this.vehicleList.map(v => v.vehiclenumber)).
+          sort((a, b) => vno2Num(a) > vno2Num(b) ? 1 : -1)
       },
       currentVehicle() {
-        const key = 'tms'
         return this.currentVehicleId
-          ? this.vehicleList.find(v => v[key] === this.currentVehicleId)
+          ? this.vehicleList.find(v => v.vehiclenumber === this.currentVehicleId)
           : null
       },
       chartLogs() {
-        return this.logs.filter(l => this.currentVehicle ? l.TID === this.currentVehicle.tms : true).
-          map(l => {
-            return {
-              TID: l.TID,
-              TIME: l.TIME.value,
-              TDT: l.TDT,
-              SOC: l.SOC,
-            }
-          })
+        const from = this.from + ' 00:00:00'
+        const to = this.to + ' 23:59:59'
+        return this.batteryLogs.
+          // from でフィルター
+          filter(bl => this.$moment(from).unix() <= bl.UpdatedAt.seconds).
+          filter(bl => this.$moment(to).unix() >= bl.UpdatedAt.seconds)
       },
     },
     methods: {
@@ -88,24 +83,18 @@
       },
       setFromDate(from) {
         this.from = from
-        this.fetchLogs()
       },
       setToDate(to) {
         this.to = to
-        this.fetchLogs()
       },
       setUnit(unit) {
-        this.unit = unit
-        this.fetchLogs()
+        this.currentUnit = unit
       },
       async fetchLogs() {
-        this.loading = true
-        const { data } = await this.$battery.logs({
-          unit: this.unit,
-          from: this.from,
-          to: this.to,
-        })
-        this.logs = data
+        const docs = await this.$db.collectionGroup(COLLECTION_NAME_BATTERY_LOG).get()
+        const batteryLogs = []
+        docs.forEach(doc => batteryLogs.push(doc.data()))
+        this.batteryLogs = batteryLogs.sort((a, b) => a.UpdatedAt > b.UpdatedAt ? 1 : -1)
         this.loading = false
       },
     },
