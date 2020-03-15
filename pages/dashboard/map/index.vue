@@ -18,7 +18,6 @@
             map-type-id="terrain"
           >
             <gmap-marker
-              v-if="false"
               :key="m.id"
               v-for="m in batteryMarkers"
               :position="m.position"
