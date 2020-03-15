@@ -16,6 +16,7 @@
         @unitSelected="setUnit"
       />
       <template slot="chart">
+        <!-- todo: 総走行距離 0スタートで右肩上がり（1件目の値を引いた数をプロットする）-->
         <v-skeleton-loader
           v-if="loading"
           type="card"
@@ -29,14 +30,42 @@
         />
         <v-card-title v-else>data not found.</v-card-title>
       </template>
-      <!-- todo: 総走行距離 0スタートで右肩上がり（1件目の値を引いた数をプロットする）-->
-      <!-- todo: SOCのグラフ @単位の最終値でまるめる -->
+    </graph-wrapper>
+    <graph-wrapper>
+      <graph-header
+        slot="header"
+        title="SOC"
+        :from="from"
+        :to="to"
+        :unit="unit"
+        :select-items="vehicleIds"
+        :selected="currentVehicleId"
+        @itemSelected="setCurrentVehicle"
+        @fromSelected="setFromDate"
+        @toSelected="setToDate"
+        @unitSelected="setUnit"
+      />
+      <template slot="chart">
+        <!-- todo: SOCのグラフ @単位の最終値でまるめる -->
+        <v-skeleton-loader
+          v-if="loading"
+          type="card"
+          class="mx-auto"
+          tile
+        />
+        <graph-soc
+          v-else-if="chartLogs.length > 0"
+          :logs="chartLogs"
+          :unit="unit"
+        />
+        <v-card-title v-else>data not found.</v-card-title>
+      </template>
     </graph-wrapper>
   </v-row>
 </template>
 
 <script>
-  import { UNIT_TYPES } from '~/model/define'
+  import { UNIT_HOUR } from '~/model/define'
 
   export default {
     data() {
@@ -46,7 +75,7 @@
         from: today,
         to: today,
         logs: [],
-        unit: UNIT_TYPES[0],
+        unit: UNIT_HOUR,
         currentVehicleId: '',
         vehicleList: [],
       }

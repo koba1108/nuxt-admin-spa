@@ -5,6 +5,7 @@ import DriverTop5 from '~/components/organisms/DriverTop5'
 import GraphHeader from '~/components/organisms/GraphHeader'
 import GraphWrapper from '~/components/organisms/GraphWrapper'
 import GraphTdt from '~/components/organisms/GraphTdt'
+import GraphSoc from '~/components/organisms/GraphSoc'
 
 Vue.mixin({
   components: {
@@ -14,5 +15,6 @@ Vue.mixin({
     GraphHeader,
     GraphWrapper,
     GraphTdt,
+    GraphSoc,
   },
 })
