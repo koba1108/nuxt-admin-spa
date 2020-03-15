@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Charger一覧
+      Charger List
       <v-spacer/>
       <v-text-field
         v-model="search"
@@ -11,7 +11,7 @@
         hide-details
         class="mr-4"
       />
-      <v-btn color="info" @click="goAddPage">追加</v-btn>
+      <v-btn color="info" @click="goAddPage">Add</v-btn>
     </v-card-title>
     <v-card-text>
       <v-data-table
@@ -20,7 +20,7 @@
         :headers="headers"
         :footer-props="footerProps"
         :items="chargerStations"
-        no-data-text="データがありません。"
+        no-data-text="no data."
       >
         <template v-slot:item.action="{ item }">
           <v-btn nuxt small text :to="`/dashboard/charger/edit/${item.id}`">
@@ -39,11 +39,11 @@
         search: '',
         headers: [
           { text: 'id', align: 'left', value: 'id' },
-          { text: '名前', align: 'left', value: 'name' },
+          { text: 'name', align: 'left', value: 'name' },
           { text: 'cs_id', align: 'left', value: 'cs_id' },
           { text: 'longitude', align: 'left', value: 'longitude' },
           { text: 'latitude', align: 'left', value: 'latitude' },
-          { text: '編集', align: 'center', sortable: false, value: 'action' },
+          { text: 'edit', align: 'center', sortable: false, value: 'action' },
         ],
         footerProps: {
           'items-per-page-options': [100, 200, 300, 400, 500],
@@ -53,10 +53,10 @@
       }
     },
     methods: {
-      async goAddPage() {
+      goAddPage() {
         this.$router.push('/dashboard/charger/add')
       },
-      async goEditPage(id) {
+      goEditPage(id) {
         this.$router.push(`/dashboard/charger/edit/${id}`)
       },
       async fetchChargerStations() {

@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      アカウント編集
+      Account Edit
       <v-spacer/>
     </v-card-title>
     <v-card-text>
@@ -12,9 +12,9 @@
       </v-form>
       <v-card-actions>
         <v-spacer/>
-        <v-btn color="success" @click="update">更新</v-btn>
-        <v-btn color="error" @click="remove">削除</v-btn>
-        <v-btn color="info" @click="goListPage">戻る</v-btn>
+        <v-btn color="success" @click="update">Update</v-btn>
+        <v-btn color="error" @click="remove">Remove</v-btn>
+        <v-btn color="info" @click="goListPage">Back</v-btn>
       </v-card-actions>
     </v-card-text>
   </v-card>
@@ -52,7 +52,7 @@
       async update() {
         const { data, errorInfo } = await this.$authUser.update(this.updateData)
         if(data) {
-          alert('更新しました')
+          alert('update succeed.')
         } else {
           console.error(errorInfo)
           alert(errorInfo.message)
@@ -61,7 +61,7 @@
       async remove() {
         try {
           await this.$authUser.delete(this.uid)
-          alert('削除しました')
+          alert('remove succeed.')
           this.$router.push('/dashboard/account')
         } catch (e) {
           console.error(e)

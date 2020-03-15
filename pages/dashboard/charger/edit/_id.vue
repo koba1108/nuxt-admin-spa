@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Charger編集
+      Charger Edit
       <v-spacer/>
     </v-card-title>
     <v-card-text>
@@ -12,9 +12,9 @@
         <v-text-field v-model.number="form.latitude" type="number" step="0.000001"/>
         <v-card-actions>
           <v-spacer/>
-          <v-btn color="success" :disabled="isInvalid" @click="update">更新</v-btn>
-          <v-btn color="error" @click="remove">削除</v-btn>
-          <v-btn color="info" @click="goListPage">戻る</v-btn>
+          <v-btn color="success" :disabled="isInvalid" @click="update">Update</v-btn>
+          <v-btn color="error" @click="remove">Remove</v-btn>
+          <v-btn color="info" @click="goListPage">Back</v-btn>
         </v-card-actions>
       </v-form>
     </v-card-text>
@@ -59,7 +59,7 @@
             collection('chargerStations').
             doc(this.id).
             set(this.newData, { merge: true })
-          alert('更新しました')
+          alert('update succeed.')
         } catch (e) {
           alert(e.message)
           console.error(e)
@@ -71,7 +71,7 @@
             collection('chargerStations').
             doc(this.id).
             delete()
-          alert('削除しました')
+          alert('remove succeed.')
           this.goListPage()
         } catch (e) {
           alert(e.message)

@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      アカウント一覧
+      Account List
       <v-spacer/>
       <v-text-field
         v-model="search"
@@ -11,7 +11,7 @@
         hide-details
         class="mr-4"
       />
-      <v-btn color="info" @click="goAddPage">追加</v-btn>
+      <v-btn color="info" @click="goAddPage">Add</v-btn>
     </v-card-title>
     <v-card-text>
       <v-data-table
@@ -20,7 +20,7 @@
         :headers="headers"
         :items="authUsers"
         :footer-props="footerProps"
-        no-data-text="データがありません。"
+        no-data-text="no data."
       >
         <template v-slot:item.action="{ item }">
           <v-btn nuxt small text :to="`/dashboard/account/edit/${item.uid}`">
@@ -39,11 +39,11 @@
         search: '',
         headers: [
           { text: 'UserId', align: 'left', value: 'uid' },
-          { text: 'ユーザ名', align: 'left', value: 'displayName' },
-          { text: 'メールアドレス', align: 'left', value: 'email' },
-          { text: '作成日時', align: 'left', value: 'metadata.creationTime' },
-          { text: '最終ログイン', align: 'left', value: 'metadata.lastSignInTime' },
-          { text: '編集', align: 'center', sortable: false, value: 'action' },
+          { text: 'name', align: 'left', value: 'displayName' },
+          { text: 'email', align: 'left', value: 'email' },
+          { text: 'created_at', align: 'left', value: 'metadata.creationTime' },
+          { text: 'last_signed_in', align: 'left', value: 'metadata.lastSignInTime' },
+          { text: 'edit', align: 'center', sortable: false, value: 'action' },
         ],
         footerProps: {
           'items-per-page-options': [100, 200, 300, 400, 500],
@@ -53,10 +53,10 @@
       }
     },
     methods: {
-      async goAddPage() {
+      goAddPage() {
         this.$router.push('/dashboard/account/add')
       },
-      async goEditPage(uid) {
+      goEditPage(uid) {
         this.$router.push(`/dashboard/account/edit/${uid}`)
       },
       async setAuthUsers() {

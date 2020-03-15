@@ -46,7 +46,6 @@
         @unitSelected="setUnit"
       />
       <template slot="chart">
-        <!-- todo: SOCのグラフ @単位の最終値でまるめる -->
         <v-skeleton-loader
           v-if="loading"
           type="card"

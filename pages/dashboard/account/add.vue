@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      アカウント追加
+      Account Add
       <v-spacer/>
     </v-card-title>
     <v-card-text>
@@ -12,8 +12,8 @@
       </v-form>
       <v-card-actions>
         <v-spacer/>
-        <v-btn color="success" @click="add">追加する</v-btn>
-        <v-btn color="info" @click="goListPage">戻る</v-btn>
+        <v-btn color="success" @click="add">Create</v-btn>
+        <v-btn color="info" @click="goListPage">Back</v-btn>
       </v-card-actions>
     </v-card-text>
   </v-card>
@@ -34,7 +34,7 @@
       async add() {
         const { data, errorInfo } = await this.$authUser.add(this.form)
         if (data) {
-          alert('作成完了しました')
+          alert('create succeed.')
           this.goListPage()
         } else {
           alert(errorInfo.message)

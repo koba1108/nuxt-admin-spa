@@ -6,7 +6,7 @@
           <v-toolbar height="35" flat>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
-            <v-btn color="info" @click="setVehicleList">
+            <v-btn color="info" @click="fetchVehicleList">
               <v-icon>update</v-icon>
             </v-btn>
           </v-toolbar>
@@ -18,18 +18,26 @@
             map-type-id="terrain"
           >
             <gmap-marker
-              :key="index"
-              v-for="(m, index) in markers"
+              v-if="false"
+              :key="m.id"
+              v-for="m in batteryMarkers"
               :position="m.position"
               :clickable="true"
               @click="showCurrentBattery(m)"
+            />
+            <gmap-marker
+              :key="c.id"
+              v-for="c in chargerStationMarkers"
+              :position="c.position"
+              :clickable="true"
+              @click="showCurrentChargeStation(c)"
             />
           </gmap-map>
         </v-card-text>
       </v-card>
     </v-col>
 
-    <template v-if="current">
+    <template v-if="currentBattery">
       <v-col cols="12">
         <v-card>
           <v-card-title color="primary">Battery Info</v-card-title>
@@ -61,12 +69,54 @@
           </v-card-text>
         </v-card>
       </v-col>
-
     </template>
+
+    <template v-if="chargerInfo">
+      <v-col cols="12">
+        <v-card>
+          <v-card-title color="primary">Charger Info</v-card-title>
+          <v-card-text>
+            <v-simple-table :fixed-header="isFixedHeader">
+              <tbody>
+              <tr v-for="(value, key) in chargerInfo" :key="key">
+                <td>{{ key }}</td>
+                <td>{{ value | addUnit(key) }}</td>
+              </tr>
+              </tbody>
+            </v-simple-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12">
+        <v-card>
+          <v-card-title color="primary">Alert Info</v-card-title>
+          <v-card-text>
+            <v-simple-table :fixed-header="isFixedHeader">
+              <tbody>
+              <tr v-for="(value, key) in chargerAlertInfo" :key="key">
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+              </tr>
+              </tbody>
+            </v-simple-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </template>
+
+
   </v-row>
 </template>
 
 <script>
+  import {
+    ALERT_TYPE_BATTERY,
+    ALERT_TYPE_BATTERY_1_3,
+    ALERT_TYPE_TELEMATICS,
+    getMessageFromInt,
+  } from '~/model/alertMessage'
+
   // unit => keys
   const unitMap = {
     BV: 'V',
@@ -75,6 +125,18 @@
     TS: '℃',
     TDT: 'km',
     SPD: 'km/hr',
+    'S1-Voltage': 'VAC',
+    'S1-Current': 'A',
+    'S1-Power': 'KW',
+    'S1-Energy Units': 'KWh',
+    'S2-Voltage': 'VAC',
+    'S2-Current': 'A',
+    'S2-Power': 'KW',
+    'S2-Energy Units': 'KWh',
+    'S3-Voltage': 'VAC',
+    'S3-Current': 'A',
+    'S3-Power': 'KW',
+    'S3-Energy Units': 'KWh',
   }
 
   const center = { lat: 28.458330, lng: 77.070976 }
@@ -92,8 +154,11 @@
       return {
         isFixedHeader: true,
         center: center,
-        current: null,
+        currentBattery: null,
+        currentChargerStation: null,
         batteryList: [],
+        chargerList: [],
+        chargerStationList: [],
         vehicleList: [],
       }
     },
@@ -101,7 +166,7 @@
       title: () => 'MAP',
       // markerのUIライブラリ
       // https://vuejsexamples.com/vue-2-google-map-custom-marker-component/
-      markers() {
+      batteryMarkers() {
         return this.batteryList.filter(b => b.LAT && b.LNG).map(b => {
           return {
             id: b.TID,
@@ -113,35 +178,82 @@
           }
         })
       },
-      // todo: バッテリーと車の出し分け
+      chargerStationMarkers() {
+        return this.chargerStationList.filter(c => c.latitude && c.longitude).map(c => {
+          return {
+            id: c.name,
+            data: c,
+            position: {
+              lat: Number(c.latitude),
+              lng: Number(c.longitude),
+            },
+          }
+        })
+      },
       batteryInfo() {
-        const { drivername, vehiclename } = this.current.vehicle ? this.current.vehicle : {}
-        const { TID, BV, BI, SOC, TS, TDT, SPD } = this.current.battery
+        const { drivername, vehiclename } = this.currentBattery.vehicle ? this.currentBattery.vehicle : {}
+        const { TID, BV, BI, SOC, TS, TDT, SPD } = this.currentBattery.battery
         return {
-          TID,
-          BV,
-          BI,
-          SOC,
-          TS,
-          TDT,
-          SPD,
+          TID, BV, BI, SOC, TS, TDT, SPD,
           DriverName: drivername || '',
           VehicleName: vehiclename || '',
         }
       },
       batteryAlertInfo() {
-        const { AL1, AL2, AL3, AL4, ST1 } = this.current.battery
+        const { AL1, AL2, AL3, AL4, ST1 } = this.currentBattery.battery
         return {
-          Battery1: AL1,
-          Battery2: AL2,
-          Battery3: AL3,
-          'Battery 1-3': AL4,
-          Telematics: ST1,
+          Battery1: getMessageFromInt(ALERT_TYPE_BATTERY, AL1),
+          Battery2: getMessageFromInt(ALERT_TYPE_BATTERY, AL2),
+          Battery3: getMessageFromInt(ALERT_TYPE_BATTERY, AL3),
+          'Battery 1-3': getMessageFromInt(ALERT_TYPE_BATTERY_1_3, AL4),
+          Telematics: getMessageFromInt(ALERT_TYPE_TELEMATICS, ST1),
+        }
+      },
+      chargerInfo() {
+        const { cs_id } = this.currentChargerStation ? this.currentChargerStation.chargerStation : {}
+        if(!cs_id) {
+          return
+        }
+        const charger = this.chargerList.find(c => c.cs_id === cs_id)
+        if(!charger) {
+          return
+        }
+        const {
+          s1_sts, em_v1, em_i1, em_p1, em_e1, s2_sts, em_v2, em_i2,
+          em_p2, em_e2, s3_sts, em_v3, em_i3, em_p3, em_e3, hlt_sts,
+        } = charger
+        return {
+          'S1-status': s1_sts,
+          'S1-Voltage': em_v1,
+          'S1-Current ': em_i1,
+          'S1-Power': em_p1,
+          'S1-Energy Units': em_e1,
+          'S2-status': s2_sts,
+          'S2-Voltage': em_v2,
+          'S2-Current ': em_i2,
+          'S2-Power': em_p2,
+          'S2-Energy Units': em_e2,
+          'S3-status': s3_sts,
+          'S3-Voltage': em_v3,
+          'S3-Current ': em_i3,
+          'S3-Power': em_p3,
+          'S3-Energy Units': em_e3,
+          'HLT_STS': hlt_sts,
+        }
+      },
+      chargerAlertInfo() {
+        // todo:
+        return {
+          S1: '',
+          S2: '',
+          S3: '',
+          'System Health Status': '',
+          'Emergency Switch Status': '',
         }
       },
     },
     methods: {
-      async setVehicleList() {
+      async fetchVehicleList() {
         try {
           const { data } = await this.$vehicleList.get()
           this.vehicleList = data.Data
@@ -152,14 +264,34 @@
       },
       showCurrentBattery(marker) {
         this.center = marker.position
-        this.current = {
+        this.currentBattery = {
           battery: marker.data,
           vehicle: this.vehicleList.find(v => v.tms === marker.id),
         }
       },
+      showCurrentChargeStation(marker) {
+        this.center = marker.position
+        this.currentChargerStation = {
+          chargerStation: marker.data,
+        }
+      },
+      async fetchChargerList() {
+        const docs = await this.$db.collection('charger').get()
+        const chargerList = []
+        docs.forEach(doc => chargerList.push(doc.data()))
+        this.chargerList = chargerList
+      },
+      async fetchChargerStationList() {
+        const docs = await this.$db.collection('chargerStations').get()
+        const chargerStationList = []
+        docs.forEach(doc => chargerStationList.push(doc.data()))
+        this.chargerStationList = chargerStationList
+      },
     },
     mounted() {
-      this.setVehicleList()
+      this.fetchVehicleList()
+      this.fetchChargerList()
+      this.fetchChargerStationList()
       this.$db.collection('battery').
         onSnapshot(snapshot => {
           this.batteryList = snapshot.docs.map(doc => doc.data())
