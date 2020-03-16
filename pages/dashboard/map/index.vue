@@ -59,9 +59,9 @@
           <v-card-text>
             <v-simple-table :fixed-header="isFixedHeader">
               <tbody>
-              <tr v-for="(value, key) in batteryAlertInfo" :key="key">
+              <tr v-for="(msg, key) in batteryAlertInfo" :key="key">
                 <td>{{ key }}</td>
-                <td>{{ value }}</td>
+                <td v-html="msg"/>
               </tr>
               </tbody>
             </v-simple-table>
@@ -113,7 +113,13 @@
     ALERT_TYPE_BATTERY,
     ALERT_TYPE_BATTERY_1_3,
     ALERT_TYPE_TELEMATICS,
-    getMessageFromInt,
+    ALERT_TYPE_S1_STS,
+    ALERT_TYPE_S2_STS,
+    ALERT_TYPE_S3_STS,
+    ALERT_HLT_STS,
+    ALERT_EMG_STS,
+    getMessageForBattery,
+    getMessageForCharger,
   } from '~/model/alertMessage'
 
   // unit => keys
@@ -201,22 +207,18 @@
       batteryAlertInfo() {
         const { AL1, AL2, AL3, AL4, ST1 } = this.currentBattery.battery
         return {
-          Battery1: getMessageFromInt(ALERT_TYPE_BATTERY, AL1),
-          Battery2: getMessageFromInt(ALERT_TYPE_BATTERY, AL2),
-          Battery3: getMessageFromInt(ALERT_TYPE_BATTERY, AL3),
-          'Battery 1-3': getMessageFromInt(ALERT_TYPE_BATTERY_1_3, AL4),
-          Telematics: getMessageFromInt(ALERT_TYPE_TELEMATICS, ST1),
+          Battery1: getMessageForBattery(ALERT_TYPE_BATTERY, AL1),
+          Battery2: getMessageForBattery(ALERT_TYPE_BATTERY, AL2),
+          Battery3: getMessageForBattery(ALERT_TYPE_BATTERY, AL3),
+          'Battery 1-3': getMessageForBattery(ALERT_TYPE_BATTERY_1_3, AL4),
+          Telematics: getMessageForBattery(ALERT_TYPE_TELEMATICS, ST1),
         }
       },
       chargerInfo() {
         const { cs_id } = this.currentChargerStation ? this.currentChargerStation.chargerStation : {}
-        if(!cs_id) {
-          return
-        }
+        if(!cs_id) return
         const charger = this.chargerList.find(c => c.cs_id === cs_id)
-        if(!charger) {
-          return
-        }
+        if(!charger) return
         const {
           s1_sts, em_v1, em_i1, em_p1, em_e1, s2_sts, em_v2, em_i2,
           em_p2, em_e2, s3_sts, em_v3, em_i3, em_p3, em_e3, hlt_sts,
@@ -241,13 +243,17 @@
         }
       },
       chargerAlertInfo() {
-        // todo:
+        const { cs_id } = this.currentChargerStation ? this.currentChargerStation.chargerStation : {}
+        if(!cs_id) return
+        const charger = this.chargerList.find(c => c.cs_id === cs_id)
+        if(!charger) return
+        const { s1_sts, s2_sts, s3_sts, hlt_sts, emg_sts } = charger
         return {
-          S1: '',
-          S2: '',
-          S3: '',
-          'System Health Status': '',
-          'Emergency Switch Status': '',
+          S1: getMessageForCharger(ALERT_TYPE_S1_STS, s1_sts),
+          S2: getMessageForCharger(ALERT_TYPE_S2_STS, s2_sts),
+          S3: getMessageForCharger(ALERT_TYPE_S3_STS, s3_sts),
+          'System Health Status': getMessageForCharger(ALERT_HLT_STS, hlt_sts),
+          'Emergency Switch Status': getMessageForCharger(ALERT_EMG_STS, emg_sts),
         }
       },
     },
@@ -267,12 +273,14 @@
           battery: marker.data,
           vehicle: this.vehicleList.find(v => v.tms === marker.id),
         }
+        this.currentChargerStation = null
       },
       showCurrentChargeStation(marker) {
         this.center = marker.position
         this.currentChargerStation = {
           chargerStation: marker.data,
         }
+        this.currentBattery = null
       },
       async fetchChargerList() {
         const docs = await this.$db.collection('charger').get()
