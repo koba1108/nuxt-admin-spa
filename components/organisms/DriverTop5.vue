@@ -32,8 +32,6 @@
 </template>
 
 <script>
-  import { COLLECTION_NAME_BATTERY } from '~/model/define'
-
   export default {
     data() {
       return {
@@ -52,14 +50,14 @@
       driverTop5() {
         return this.currentBattery.
           filter(b => b.TID).
-          sort((a, b) => a.TDT < b.TDT ? 1 : -1).
+          sort((a, b) => a.TDT_DIFF < b.TDT_DIFF ? 1 : -1).
           slice(0, 5).
           map(b => {
             const vehicle = this.vehicleList.find(d => d.tms === b.TID)
             return {
               tid: b.TID,
               driverName: vehicle ? vehicle.drivername : '',
-              tdt: `${b.TDT} km`,
+              tdt: `${b.TDT_DIFF} km`,
             }
           })
       },
@@ -70,6 +68,14 @@
         this.vehicleList = data.Data
       },
       async setCurrentBattery() {
+        const today = this.$moment().format('YYYY-MM-DD')
+        const { data } = await this.$battery.getDistanceTraveled({
+          from: today,
+          to: today,
+        })
+        this.currentBattery = data
+        /*
+        総走行距離パターンはこっち
         this.unSubscribe = await this.$db.
           collection(COLLECTION_NAME_BATTERY).
           onSnapshot(docs => {
@@ -79,6 +85,7 @@
             })
             this.currentBattery = currentBattery
           })
+         */
       },
     },
     async mounted() {

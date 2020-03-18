@@ -26,6 +26,7 @@ export default async ({ app, env, store }, inject) => {
   })
   inject('battery', {
     logs: functions.httpsCallable('getBatteryLogs'),
+    getDistanceTraveled: functions.httpsCallable('getDistanceTraveled'),
   })
   inject('vehicleList', {
     get: functions.httpsCallable('getVehicleList'),

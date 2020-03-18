@@ -6,9 +6,16 @@
 </template>
 
 <script>
-  import { UNIT_MIN } from '~/model/define'
+  import { UNIT_SEC, UNIT_MIN } from '~/model/define'
 
   const COLOR_WHITE = 'rgba(0,0,0,0)'
+  const displayFormats = {
+    second: 'YYYY-MM-DD HH:mm:ss',
+    minute: 'YYYY-MM-DD HH:mm',
+    hour: 'YYYY-MM-DD HH:mm',
+    day: 'YYYY-MM-DD',
+    week: 'YYYY-MM-DD',
+  }
 
   function generateRGB() {
     const r = Math.floor(Math.random() * 256)
@@ -31,6 +38,14 @@
     computed: {
       options() {
         const unitStepSize = this.unit === UNIT_MIN ? 15 : 1
+        const timeOption = this.unit === UNIT_SEC ? {
+          displayFormats: displayFormats,
+        } : {
+          unit: this.unit,
+          round: this.unit,
+          unitStepSize: unitStepSize,
+          displayFormats: displayFormats,
+        }
         return {
           responsive: true,
           maintainAspectRatio: false,
@@ -39,17 +54,7 @@
               {
                 type: 'time',
                 distribution: 'linear',
-                time: {
-                  unit: this.unit,
-                  round: this.unit,
-                  unitStepSize : unitStepSize,
-                  displayFormats: {
-                    minute: 'YYYY-MM-DD HH:mm',
-                    hour: 'YYYY-MM-DD HH:mm',
-                    day: 'YYYY-MM-DD',
-                    week: 'YYYY-MM-DD',
-                  }
-                },
+                time: timeOption,
               },
             ],
             yAxes: [
@@ -72,6 +77,8 @@
           datasets: tids.map(tid => {
             return {
               label: tid,
+              lineTension: 0,
+              pointHoverRadius: 10,
               animation: true,
               borderColor: generateRGB(),
               backgroundColor: COLOR_WHITE,

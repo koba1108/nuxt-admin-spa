@@ -9,8 +9,8 @@
         :to="to"
         :unit="unit"
         :select-items="vehicleIds"
-        :selected="currentVehicleId"
-        @itemSelected="setCurrentVehicle"
+        :selected-items="currentVehicles"
+        @itemSelected="setCurrentVehicles"
         @fromSelected="setFromDate"
         @toSelected="setToDate"
         @unitSelected="setUnit"
@@ -39,8 +39,8 @@
         :to="to"
         :unit="unit"
         :select-items="vehicleIds"
-        :selected="currentVehicleId"
-        @itemSelected="setCurrentVehicle"
+        :selected-items="currentVehicles"
+        @itemSelected="setCurrentVehicles"
         @fromSelected="setFromDate"
         @toSelected="setToDate"
         @unitSelected="setUnit"
@@ -75,7 +75,7 @@
         to: today,
         logs: [],
         unit: UNIT_HOUR,
-        currentVehicleId: '',
+        currentVehicles: [],
         vehicleList: [],
       }
     },
@@ -88,14 +88,14 @@
           filter(tms => tms !== 'TMS........').
           sort((a, b) => keyToNum(a) > keyToNum(b) ? 1 : -1)
       },
-      currentVehicle() {
-        const key = 'tms'
-        return this.currentVehicleId
-          ? this.vehicleList.find(v => v[key] === this.currentVehicleId)
-          : null
-      },
       chartLogs() {
-        return this.logs.filter(l => this.currentVehicle ? l.TID === this.currentVehicle.tms : true).
+        return this.logs.filter(l => {
+          if (this.currentVehicles.length > 0) {
+            return this.currentVehicles.includes(l.TID)
+          }  else {
+            return true
+          }
+        }).
           map(l => {
             return {
               TID: l.TID,
@@ -111,8 +111,8 @@
         const { data } = await this.$vehicleList.get()
         this.vehicleList = data.Data
       },
-      setCurrentVehicle(vid) {
-        this.currentVehicleId = vid ? vid : ''
+      setCurrentVehicles(tidList) {
+        this.currentVehicles = tidList
       },
       setFromDate(from) {
         this.from = from

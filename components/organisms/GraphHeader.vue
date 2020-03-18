@@ -1,9 +1,28 @@
 <template>
   <v-row>
-    <v-col cols="12">
+    <v-col cols="6">
       <v-card-title>{{ title }}</v-card-title>
     </v-col>
-    <v-col cols="3">
+    <v-col cols="6">
+      <v-select
+        :value="selectedItems"
+        @input="$emit('itemSelected', $event)"
+        :items="selectItems"
+        label="Select Vehicle Name"
+        clearable
+        multiple
+      >
+        <template v-slot:selection="{ item, index }">
+          <v-chip v-if="index < 2">
+            <span>{{ item }}</span>
+          </v-chip>
+          <span v-if="index === 2" class="grey--text caption">
+            (+{{ selectedItems.length - 2 }} others)
+          </span>
+        </template>
+      </v-select>
+    </v-col>
+    <v-col cols="4">
       <v-text-field
         type="date"
         label="From"
@@ -12,7 +31,7 @@
         @click="openDatepicker(PICKER_TYPE_FROM)"
       />
     </v-col>
-    <v-col cols="3">
+    <v-col cols="4">
       <v-text-field
         :value="to"
         type="date"
@@ -21,21 +40,12 @@
         @click="openDatepicker(PICKER_TYPE_TO)"
       />
     </v-col>
-    <v-col cols="3">
+    <v-col cols="4">
       <v-select
         :value="unit"
         @input="$emit('unitSelected', $event)"
         :items="UNIT_TYPES"
         label="Select Unit"
-        clearable
-      />
-    </v-col>
-    <v-col cols="3">
-      <v-select
-        :value="selected"
-        @input="$emit('itemSelected', $event)"
-        :items="selectItems"
-        label="Select Vehicle Name"
         clearable
       />
     </v-col>
@@ -77,9 +87,9 @@
         type: Array,
         required: true,
       },
-      selected: {
-        type: String,
-        required: true,
+      selectedItems: {
+        type: Array,
+        default: () => [],
       },
     },
     data() {

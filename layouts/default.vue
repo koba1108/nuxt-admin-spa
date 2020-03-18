@@ -54,12 +54,12 @@
     {
       icon: 'mdi-google-maps',
       title: 'Monitoring',
-      path: '/dashboard/map',
+      path: '/dashboard/monitoring',
     },
     {
       icon: 'mdi-table',
       title: 'Aggregate',
-      path: '/dashboard/summary',
+      path: '/dashboard/aggregate',
     },
     {
       icon: 'mdi-account',
