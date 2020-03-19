@@ -7,6 +7,7 @@
 
 <script>
   import { UNIT_SEC, UNIT_MIN } from '~/model/define'
+  import { UNIT_DAY, UNIT_HOUR } from '../../model/define'
 
   const COLOR_WHITE = 'rgba(0,0,0,0)'
   const displayFormats = {

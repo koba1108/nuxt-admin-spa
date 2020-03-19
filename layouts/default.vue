@@ -58,8 +58,8 @@
     },
     {
       icon: 'mdi-table',
-      title: 'Aggregate',
-      path: '/dashboard/aggregate',
+      title: 'Summary',
+      path: '/dashboard/summary',
     },
     {
       icon: 'mdi-account',

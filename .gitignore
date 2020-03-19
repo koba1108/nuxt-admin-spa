@@ -87,3 +87,4 @@ secret
 .idea
 .firebase
 .firebaserc
+.DS_Store

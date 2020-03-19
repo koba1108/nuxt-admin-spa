@@ -23,6 +23,7 @@
               :position="m.position"
               :clickable="true"
               @click="showCurrentBattery(m)"
+              :icon="m.icon"
             />
             <gmap-marker
               :key="c.id"
@@ -30,6 +31,7 @@
               :position="c.position"
               :clickable="true"
               @click="showCurrentChargeStation(c)"
+              :icon="c.icon"
             />
           </gmap-map>
         </v-card-text>
@@ -116,8 +118,8 @@
     ALERT_TYPE_S1_STS,
     ALERT_TYPE_S2_STS,
     ALERT_TYPE_S3_STS,
-    ALERT_HLT_STS,
-    ALERT_EMG_STS,
+    ALERT_TYPE_HLT_STS,
+    ALERT_TYPE_EMG_STS,
     getMessageForBattery,
     getMessageForCharger,
   } from '~/model/alertMessage'
@@ -180,6 +182,11 @@
               lat: Number(b.LAT),
               lng: Number(b.LNG),
             },
+            icon: {
+              url: this.hasAlert('battery', b) ? '/img/icon/ev_red.svg' : '/img/icon/ev_green.svg',
+              size: { width: 46, height: 46, f: 'px', b: 'px' },
+              scaledSize: { width: 23, height: 23, f: 'px', b: 'px' },
+            },
           }
         })
       },
@@ -191,6 +198,11 @@
             position: {
               lat: Number(c.latitude),
               lng: Number(c.longitude),
+            },
+            icon: {
+              url: this.hasAlert('charger', c) ? '/img/icon/charger_red.svg' : '/img/icon/charger_blue.svg',
+              size: { width: 46, height: 46, f: 'px', b: 'px' },
+              scaledSize: { width: 23, height: 23, f: 'px', b: 'px' },
             },
           }
         })
@@ -252,12 +264,53 @@
           S1: getMessageForCharger(ALERT_TYPE_S1_STS, s1_sts),
           S2: getMessageForCharger(ALERT_TYPE_S2_STS, s2_sts),
           S3: getMessageForCharger(ALERT_TYPE_S3_STS, s3_sts),
-          'System Health Status': getMessageForCharger(ALERT_HLT_STS, hlt_sts),
-          'Emergency Switch Status': getMessageForCharger(ALERT_EMG_STS, emg_sts),
+          'System Health Status': getMessageForCharger(ALERT_TYPE_HLT_STS, hlt_sts),
+          'Emergency Switch Status': getMessageForCharger(ALERT_TYPE_EMG_STS, emg_sts),
         }
       },
     },
     methods: {
+      hasAlert(type, data) {
+        if(type === 'battery') {
+          console.log('battery', data)
+          const { AL1, AL2, AL3, AL4, ST1 } = data
+          if(getMessageForBattery(ALERT_TYPE_BATTERY, AL1) !== '-') {
+            return true
+          }
+          if(getMessageForBattery(ALERT_TYPE_BATTERY, AL2) !== '-') {
+            return true
+          }
+          if(getMessageForBattery(ALERT_TYPE_BATTERY, AL3) !== '-') {
+            return true
+          }
+          if(getMessageForBattery(ALERT_TYPE_BATTERY_1_3, AL4) !== '-') {
+            return true
+          }
+          if(getMessageForBattery(ALERT_TYPE_TELEMATICS, ST1) !== '-') {
+            // return true
+          }
+        } else {
+          const charger = this.chargerList.find(c => c.cs_id === data.cs_id)
+          if(!charger) return false
+          const { s1_sts, s2_sts, s3_sts, hlt_sts, emg_sts } = charger
+          if(getMessageForCharger(ALERT_TYPE_S1_STS, s1_sts) !== '-') {
+            return true
+          }
+          if(getMessageForCharger(ALERT_TYPE_S2_STS, s2_sts) !== '-') {
+            return true
+          }
+          if(getMessageForCharger(ALERT_TYPE_S3_STS, s3_sts) !== '-') {
+            return true
+          }
+          if(getMessageForCharger(ALERT_TYPE_HLT_STS, hlt_sts) !== '-') {
+            return true
+          }
+          if(getMessageForCharger(ALERT_TYPE_EMG_STS, emg_sts) !== '-') {
+            return true
+          }
+        }
+        return false
+      },
       async fetchVehicleList() {
         try {
           const { data } = await this.$vehicleList.get()

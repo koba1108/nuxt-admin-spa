@@ -74,7 +74,7 @@ export default {
     // See https://github.com/nuxt-community/axios-module#options
   },
   moment: {
-    defaultTimezone: 'UTC',
+    defaultTimezone: 'Asia/Kolkata',
   },
   router: {
     middleware: 'auth',

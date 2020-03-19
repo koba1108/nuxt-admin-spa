@@ -90,20 +90,19 @@
       },
       chartLogs() {
         return this.logs.filter(l => {
-          if (this.currentVehicles.length > 0) {
+          if(this.currentVehicles.length > 0) {
             return this.currentVehicles.includes(l.TID)
-          }  else {
+          } else {
             return true
           }
-        }).
-          map(l => {
-            return {
-              TID: l.TID,
-              TIME: l.TIME.value,
-              TDT: l.TDT,
-              SOC: l.SOC,
-            }
-          })
+        }).map(l => {
+          return {
+            TID: l.TID,
+            TIME: l.TIME.value,
+            TDT: l.TDT,
+            SOC: l.SOC,
+          }
+        })
       },
     },
     methods: {

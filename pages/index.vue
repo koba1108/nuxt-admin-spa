@@ -64,7 +64,7 @@
       async doLogin() {
         try {
           await this.$auth().signInWithEmailAndPassword(this.email, this.password)
-          this.$router.push('/dashboard/aggregate')
+          this.$router.push('/dashboard/summary')
         } catch (e) {
           alert(e.message)
           console.error(e)

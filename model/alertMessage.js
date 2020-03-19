@@ -126,7 +126,7 @@ export const getMessageForCharger = (key, i) => {
       return ALERT_S2_STS.hasOwnProperty(i) ? ALERT_TYPE_S2_STS[i] : '-'
     case ALERT_TYPE_S3_STS:
       return ALERT_S3_STS.hasOwnProperty(i) ? ALERT_S3_STS[i] : '-'
-    case ALERT_HLT_STS:
+    case ALERT_TYPE_HLT_STS:
       return ALERT_HLT_STS.hasOwnProperty(i) ? ALERT_HLT_STS[i] : '-'
     case ALERT_TYPE_EMG_STS:
       return ALERT_EMG_STS.hasOwnProperty(i) ? ALERT_EMG_STS[i] : '-'
