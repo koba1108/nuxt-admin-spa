@@ -7,16 +7,19 @@
         title="TDT"
         :from="from"
         :to="to"
+        :from-hms="fromHms"
+        :to-hms="toHms"
         :unit="unit"
         :select-items="vehicleIds"
         :selected-items="currentVehicles"
         @itemSelected="setCurrentVehicles"
         @fromSelected="setFromDate"
         @toSelected="setToDate"
+        @changeFromHms="setFromHms"
+        @changeToHms="setToHms"
         @unitSelected="setUnit"
       />
       <template slot="chart">
-        <!-- todo: 総走行距離 0スタートで右肩上がり（1件目の値を引いた数をプロットする）-->
         <v-skeleton-loader
           v-if="loading"
           type="card"
@@ -37,12 +40,16 @@
         title="SOC"
         :from="from"
         :to="to"
+        :from-hms="fromHms"
+        :to-hms="toHms"
         :unit="unit"
         :select-items="vehicleIds"
         :selected-items="currentVehicles"
         @itemSelected="setCurrentVehicles"
         @fromSelected="setFromDate"
         @toSelected="setToDate"
+        @changeFromHms="setFromHms"
+        @changeToHms="setToHms"
         @unitSelected="setUnit"
       />
       <template slot="chart">
@@ -66,6 +73,8 @@
 <script>
   import { UNIT_HOUR } from '~/model/define'
 
+  const startOfDate = '00:00'
+  const endOfDate = '23:59'
   export default {
     data() {
       const today = this.$moment().format('YYYY-MM-DD')
@@ -73,6 +82,8 @@
         loading: true,
         from: today,
         to: today,
+        fromHms: startOfDate,
+        toHms: endOfDate,
         logs: [],
         unit: UNIT_HOUR,
         currentVehicles: [],
@@ -104,6 +115,12 @@
           }
         })
       },
+      reqFrom() {
+        return `${this.from} ${this.fromHms}`
+      },
+      reqTo() {
+        return `${this.to} ${this.toHms}`
+      }
     },
     methods: {
       async setVehicleList() {
@@ -115,10 +132,20 @@
       },
       setFromDate(from) {
         this.from = from
+        this.fromHms = startOfDate
         this.fetchLogs()
       },
       setToDate(to) {
         this.to = to
+        this.toHms = endOfDate
+        this.fetchLogs()
+      },
+      setFromHms(hms) {
+        this.fromHms = hms ? hms : startOfDate
+        this.fetchLogs()
+      },
+      setToHms(hms) {
+        this.toHms = hms ? hms : endOfDate
         this.fetchLogs()
       },
       setUnit(unit) {
@@ -129,8 +156,8 @@
         this.loading = true
         const { data } = await this.$battery.logs({
           unit: this.unit,
-          from: this.from,
-          to: this.to,
+          from: this.reqFrom,
+          to: this.reqTo,
         })
         this.logs = data
         this.loading = false

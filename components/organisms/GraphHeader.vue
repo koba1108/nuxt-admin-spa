@@ -22,7 +22,7 @@
         </template>
       </v-select>
     </v-col>
-    <v-col cols="4">
+    <v-col cols="3">
       <v-text-field
         type="date"
         label="From"
@@ -31,13 +31,29 @@
         @click="openDatepicker(PICKER_TYPE_FROM)"
       />
     </v-col>
-    <v-col cols="4">
+    <v-col cols="1">
+      <v-text-field
+        type="time"
+        :value="fromHms"
+        :clearable="false"
+        @change="$emit('changeFromHms', $event)"
+      />
+    </v-col>
+    <v-col cols="3">
       <v-text-field
         :value="to"
         type="date"
         label="To"
         prepend-icon="event"
         @click="openDatepicker(PICKER_TYPE_TO)"
+      />
+    </v-col>
+    <v-col cols="1">
+      <v-text-field
+        type="time"
+        :value="toHms"
+        :clearable="false"
+        @change="$emit('changeToHms', $event)"
       />
     </v-col>
     <v-col cols="4">
@@ -76,6 +92,14 @@
         required: true,
       },
       to: {
+        type: String,
+        required: true,
+      },
+      fromHms: {
+        type: String,
+        required: true,
+      },
+      toHms: {
         type: String,
         required: true,
       },

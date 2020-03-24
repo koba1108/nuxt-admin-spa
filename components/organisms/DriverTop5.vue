@@ -1,8 +1,29 @@
 <template>
   <v-col cols="12">
     <v-card>
-      <v-card-title>TOP5</v-card-title>
-      <v-simple-table :fixed-header="true">
+      <v-row class="p-10">
+        <v-col cols="8">
+          <v-card-title>TOP5</v-card-title>
+        </v-col>
+        <v-col cols="4">
+          <v-text-field
+            class="calendar"
+            type="date"
+            label="Date"
+            prepend-icon="event"
+            v-model="selectDate"
+            @click="dialogActive = true"
+          />
+        </v-col>
+      </v-row>
+      <v-skeleton-loader
+        v-if="isProgress"
+        class="mx-auto"
+        :style="progressStyle"
+        type="card"
+        tile
+      />
+      <v-simple-table v-else :fixed-header="true">
         <thead>
         <tr>
           <th class="text-left">TID</th>
@@ -10,7 +31,7 @@
           <th class="text-left">TDT</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody v-if="driverTop5.length > 0">
         <tr v-for="t in driverTop5" :key="t.TID">
           <template v-if="t.driverName && t.tdt">
             <td>{{ t.tid }}</td>
@@ -19,28 +40,34 @@
           </template>
         </tr>
         </tbody>
+        <v-card-text v-else>
+        <v-card-title class="light-gray">data not found.</v-card-title>
+        </v-card-text>
       </v-simple-table>
-      <v-skeleton-loader
-        v-if="isProgress"
-        class="mx-auto"
-        :style="progressStyle"
-        type="card"
-        tile
-      />
     </v-card>
+
+    <v-dialog :max-width="290" v-model="dialogActive">
+      <v-date-picker
+        show-current
+        no-title
+        reactive
+        @click:date="fetchSelectData"
+      />
+    </v-dialog>
+
   </v-col>
 </template>
 
 <script>
-  import { COLLECTION_NAME_BATTERY } from '~/model/define'
-
   export default {
     data() {
       return {
-        isProgress: true,
-        unSubscribe: null,
+        isProgress: false,
+        // unSubscribe: null,
         vehicleList: [],
         currentBattery: [],
+        selectDate: '',
+        dialogActive: false,
       }
     },
     computed: {
@@ -81,17 +108,25 @@
       */
     },
     methods: {
+      fetchSelectData(date) {
+        this.selectDate = date
+        this.dialogActive = false
+        this.setCurrentBattery()
+      },
       async setVehicleList() {
         const { data } = await this.$vehicleList.get()
         this.vehicleList = data.Data
       },
       async setCurrentBattery() {
-        const today = this.$moment().format('YYYY-MM-DD')
-        const { data } = await this.$battery.getDistanceTraveled({
-          from: today,
-          to: today,
-        })
-        this.currentBattery = data
+        if(!this.isProgress && this.selectDate) {
+          this.isProgress = true
+          const { data } = await this.$battery.getDistanceTraveled({
+            from: this.selectDate,
+            to: this.selectDate,
+          })
+          this.currentBattery = data
+          this.isProgress = false
+        }
         /*
         // 総走行距離パターンはこっち
         this.unSubscribe = await this.$db.
@@ -107,16 +142,29 @@
       },
     },
     async mounted() {
+      this.selectDate = this.$moment().format('YYYY-MM-DD')
       await Promise.all([
         this.setVehicleList(),
         this.setCurrentBattery(),
       ])
-      this.isProgress = false
     },
+    /*
     beforeDestroy() {
       if(this.unSubscribe) {
         this.unSubscribe()
       }
     },
+    */
   }
 </script>
+<style lang="scss" scoped>
+  .p-10 {
+    padding: 10px;
+  }
+  .light-gray {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  .calendar {
+    font-weight: 500;
+  }
+</style>
