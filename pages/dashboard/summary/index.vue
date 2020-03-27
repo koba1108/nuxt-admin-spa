@@ -71,7 +71,7 @@
 </template>
 
 <script>
-  import { UNIT_HOUR } from '~/model/define'
+  import { UNIT_SEC, UNIT_HOUR } from '~/model/define'
 
   const startOfDate = '00:00'
   const endOfDate = '23:59'
@@ -120,7 +120,7 @@
       },
       reqTo() {
         return `${this.to} ${this.toHms}`
-      }
+      },
     },
     methods: {
       async setVehicleList() {
@@ -133,11 +133,19 @@
       setFromDate(from) {
         this.from = from
         this.fromHms = startOfDate
+        if(this.unit === UNIT_SEC) {
+          this.to = this.from
+          this.toHms = endOfDate
+        }
         this.fetchLogs()
       },
       setToDate(to) {
         this.to = to
         this.toHms = endOfDate
+        if(this.unit === UNIT_SEC) {
+          this.from = this.to
+          this.fromHms = startOfDate
+        }
         this.fetchLogs()
       },
       setFromHms(hms) {
@@ -150,6 +158,10 @@
       },
       setUnit(unit) {
         this.unit = unit
+        if(this.unit === UNIT_SEC) {
+          this.to = this.from
+          this.toHms = endOfDate
+        }
         this.fetchLogs()
       },
       async fetchLogs() {

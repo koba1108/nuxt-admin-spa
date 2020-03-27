@@ -6,7 +6,7 @@ Vue.use(VueGoogleMaps, {
   load: {
     key: nymbus.apiKey,
     libraries: 'places',
-    region: 'JP',
-    language: 'ja'
+    // region: 'JP',
+    // language: 'ja'
   }
 })

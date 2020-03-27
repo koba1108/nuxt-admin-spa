@@ -12,6 +12,9 @@
                   src="/img/logo/bg-transparent.png"
                   contain
                 />
+                <v-row justify="center">
+                  <v-card-title>Login to your account</v-card-title>
+                </v-row>
                 <v-form>
                   <v-text-field
                     id="email"
@@ -64,7 +67,7 @@
       async doLogin() {
         try {
           await this.$auth().signInWithEmailAndPassword(this.email, this.password)
-          this.$router.push('/dashboard/summary')
+          this.$router.push('/dashboard/monitoring')
         } catch (e) {
           alert(e.message)
           console.error(e)

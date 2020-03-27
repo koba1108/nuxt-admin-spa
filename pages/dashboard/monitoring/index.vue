@@ -13,9 +13,10 @@
         </v-card-title>
         <v-card-text>
           <gmap-map
+            map-type-id="terrain"
             :center="center"
             :zoom="10"
-            map-type-id="terrain"
+            :options="mapOptions"
           >
             <gmap-marker
               :key="m.id"
@@ -146,7 +147,41 @@
     'S3-Energy Units': 'KWh',
   }
 
-  const center = { lat: 28.458330, lng: 77.070976 }
+  const mapStyles = [
+    {
+      featureType: 'administrative.land_parcel',
+      stylers: [
+        { visibility: 'off' },
+      ],
+    },
+    {
+      featureType: 'administrative.neighborhood',
+      stylers: [
+        { visibility: 'off' },
+      ],
+    },
+    {
+      featureType: 'poi',
+      elementType: 'labels.text',
+      stylers: [
+        { visibility: 'off' },
+      ],
+    },
+    {
+      featureType: 'road',
+      elementType: 'labels',
+      stylers: [
+        { visibility: 'off' },
+      ],
+    },
+    {
+      featureType: 'water',
+      elementType: 'labels.text',
+      stylers: [
+        { visibility: 'off' },
+      ],
+    },
+  ]
 
   export default {
     filters: {
@@ -160,7 +195,7 @@
     data() {
       return {
         isFixedHeader: true,
-        center: center,
+        center: { lat: 28.458330, lng: 77.070976 },
         currentBattery: null,
         currentChargerStation: null,
         batteryList: [],
@@ -171,6 +206,9 @@
     },
     computed: {
       title: () => 'MAP',
+      mapOptions() {
+        return { styles: mapStyles }
+      },
       // markerのUIライブラリ
       // https://vuejsexamples.com/vue-2-google-map-custom-marker-component/
       batteryMarkers() {
