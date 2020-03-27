@@ -106,8 +106,6 @@
         </v-card>
       </v-col>
     </template>
-
-
   </v-row>
 </template>
 
